@@ -29,13 +29,19 @@ checkAllRowCounts([], []).
 checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
     
-checkColumnCount([], []).
-checkColumnCount([RowHead|RowTail], [FirstCount|OtherCounts]) :-
-    boat(RowHead), NextCount is FirstCount - 1, checkColumnCount(RowTail, OtherCounts).
-
-checkAllColumnCounts([], Counts) :- allZero(Counts).
-checkAllColumnCounts([FirstRow|OtherRows], Counts) :-
-    checkColumnCount(FirstRow, Counts), checkColumnCount(OtherRows, Counts).
+loopX(_, 0, 0, 0).
+loopX(Field, Count, X, Y) :-
+    getXYElement(X, Y, Field, Cell), boat(Cell), CountDec is Count - 1, YDec is Y - 1, loopX(Field, CountDec, X, YDec);
+    getXYElement(X, Y, Field, Cell), water(Cell), YDec is Y - 1, loopX(Field, Count, X, YDec).
+   
+loopX(_, [], 0).
+loopX(Field, [FirstCount|OtherCounts], X) :-
+    height(Field, Height), loopY(Field, FirstCount, X, Height), XDec is X - 1, loopX(Field, OtherCounts, XDec).
+    
+checkAllColumnCounts(Field, RowCounts) :-
+    width(Field, Width), loopX(Field, RowCounts, Width).
+    
+checkAllCounts(Field, RowCounts, ColumnCounts) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
     
 
 %CheckAround
