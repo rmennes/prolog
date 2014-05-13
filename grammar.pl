@@ -14,8 +14,10 @@ north(e, '~').
 north(s, n).
 north(s, x).
 north(w, '~').
-north(x, _).
-north('~', _).
+north(x, x).
+north(x, '~').
+north(x, n).
+north('~', P) :- P\=n.
 
 %%East
 east(n, '~').
@@ -24,8 +26,10 @@ east(e, '~').
 east(s, '~').
 east(w, x).
 east(w, e).
-east(x, _).
-east('~', _).
+east(x, x).
+east(x, '~').
+east(x, e).
+east('~', P) :- P\=e.
 
 %%South
 south(n, x).
@@ -34,8 +38,10 @@ south(o, '~').
 south(e, '~').
 south(s, '~').
 south(w, '~').
-south(x, _).
-south('~', _).
+south(x, x).
+south(x, '~').
+south(x, s).
+south('~', P) :- P\=s.
 
 %%West
 west(n, '~').
@@ -44,8 +50,10 @@ west(e, x).
 west(e, w).
 west(s, '~').
 west(w, '~').
-west(x, _).
-west('~', _).
+west(x, x).
+west(x, '~').
+west(x, w).
+west('~', P) :- P\=w.
 
 %%diagonal
 diagonal(_, '~').
@@ -86,25 +94,25 @@ buttomBorder('~').
 
 %%LeftTopCorner
 leftTopCorner(n).
-leftTopCorner(e).
+leftTopCorner(w).
 leftTopCorner(o).
 leftTopCorner('~').
 
 %%RightTopCorner
 rightTopCorner(n).
-rightTopCorner(w).
+rightTopCorner(e).
 rightTopCorner(o).
 rightTopCorner('~').
 
 %%LeftButtomCorner
 leftButtomCorner(s).
-leftButtomCorner(e).
+leftButtomCorner(w).
 leftButtomCorner(o).
 leftButtomCorner('~').
 
 %%RightButtonCorner
 rightButtomCorner(s).
-rightButtomCorner(w).
+rightButtomCorner(e).
 rightButtomCorner(o).
 rightButtomCorner('~').
 
