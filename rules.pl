@@ -13,6 +13,9 @@ getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 width([Head|_], X) :- length(Head, X1), X is X1-1. %width
 height(Field, X) :- length(Field, X1), X is X1-1. %height
 
+actualWidth([Head|_], X) :- length(Head, X).
+actualHeight(Field, X) :- length(Field, X).
+
 allZero([]).
 allZero([0|T]) :- allZero(T).
 
@@ -30,17 +33,18 @@ checkAllRowCounts([], []).
 checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
     
-loopX(_, 0, 0, 0).
-loopX(Field, Count, X, Y) :-
-    getXYElement(X, Y, Field, Cell), boat(Cell), CountDec is Count - 1, YDec is Y - 1, loopX(Field, CountDec, X, YDec);
-    getXYElement(X, Y, Field, Cell), water(Cell), YDec is Y - 1, loopX(Field, Count, X, YDec).
+loopY(_, 0, _, 0).  % Loop until x=0 && count=0
+loopY(Field, Count, X, Y) :-
+    XDec is X - 1, YDec is Y - 1, CountDec is Count - 1, getXYElement(XDec, YDec, Field, Cell), boat(Cell), loopY(Field, CountDec, X, YDec);
+    XDec is X - 1, YDec is Y - 1, getXYElement(XDec, YDec, Field, Cell), water(Cell), loopY(Field, Count, X, YDec).
    
-loopX(_, [], 0).
+  
+loopX(Field, _, XInc) :- X is XInc - 1, actualWidth(Field, X).
 loopX(Field, [FirstCount|OtherCounts], X) :-
-    height(Field, Height), loopY(Field, FirstCount, X, Height), XDec is X - 1, loopX(Field, OtherCounts, XDec).
+    actualHeight(Field, Height), loopY(Field, FirstCount, X, Height), XInc is X + 1, loopX(Field, OtherCounts, XInc).
     
-checkAllColumnCounts(Field, RowCounts) :-
-    width(Field, Width), loopX(Field, RowCounts, Width).
+checkAllColumnCounts(Field, ColumnCounts) :-
+    loopX(Field, ColumnCounts, 1).
     
 checkAllCounts(Field, RowCounts, ColumnCounts) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
     

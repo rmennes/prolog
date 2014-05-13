@@ -5,3 +5,5 @@ checkAllRowCounts([[x, '~', '~'], ['~', x, '~'], [x, '~', x]], [1, 1, 2]).
 checkRowCount([x, '~', '~'], 1).
 
 checkAllColumnCounts([[x, '~', '~'], ['~', x, '~'], [x, '~', x]], [2, 1, 1]).
+
+loopY([[x, '~', '~'], ['~', x, '~'], [x, '~', x]], 2, 1, 3).
