@@ -8,10 +8,16 @@ getNthElement(N, [_|Tail], X) :- N1 is N-1, getNthElement(N1, Tail, X).
 getXYElement(X, 0, [Head|_], E) :- getNthElement(X, Head, E).
 getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 
+<<<<<<< HEAD
 %Default rules
 %%Row and Coumns
 width([Head|_], X) :- length(Head, X1), X is X1-1. %width
 height(Field, X) :- length(Field, X1), X is X1-1. %height
+=======
+% Width & height of 2-dimensional field
+width([Head|_], X) :- length(Head, X). %width
+height(Field, X) :- length(Field, X). %height
+>>>>>>> 8d333fa1dc8fca29cf089509b3256e7174cd2cae
 
 allZero([]).
 allZero([0|T]) :- allZero(T).
@@ -21,6 +27,13 @@ allZero([0|T]) :- allZero(T).
 %%%%%%%%%
 
 %Check whether field satisfies the numbers on the side
+<<<<<<< HEAD
+checkFieldStrip([], 0).
+checkFieldStrip([StripHead|StripTail], BoatCount) :- 
+    boat(StripHead), NextCount is BoatCount - 1, checkFieldStrip(StripTail, NextCount);
+    water(StripHead), checkFieldStrip(StripTail, BoatCount).
+   
+=======
 checkRowCount([], 0).
 checkRowCount([StripHead|StripTail], BoatCount) :- 
     boat(StripHead), NextCount is BoatCount - 1, checkRowCount(StripTail, NextCount);
@@ -30,21 +43,16 @@ checkAllRowCounts([], []).
 checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
     
-loopX(_, 0, 0, 0).
-loopX(Field, Count, X, Y) :-
-    getXYElement(X, Y, Field, Cell), boat(Cell), CountDec is Count - 1, YDec is Y - 1, loopX(Field, CountDec, X, YDec);
-    getXYElement(X, Y, Field, Cell), water(Cell), YDec is Y - 1, loopX(Field, Count, X, YDec).
-   
-loopX(_, [], 0).
-loopX(Field, [FirstCount|OtherCounts], X) :-
-    height(Field, Height), loopY(Field, FirstCount, X, Height), XDec is X - 1, loopX(Field, OtherCounts, XDec).
-    
-checkAllColumnCounts(Field, RowCounts) :-
-    width(Field, Width), loopX(Field, RowCounts, Width).
-    
-checkAllCounts(Field, RowCounts, ColumnCounts) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
+checkColumnCount([], []).
+checkColumnCount([RowHead|RowTail], [FirstCount|OtherCounts]) :-
+    boat(RowHead), NextCount is FirstCount - 1, checkColumnCount(RowTail, OtherCounts).
+
+checkAllColumnCounts([], Counts) :- allZero(Counts).
+checkAllColumnCounts([FirstRow|OtherRows], Counts) :-
+    checkColumnCount(FirstRow, Counts), checkColumnCount(OtherRows, Counts).
     
 
+>>>>>>> 8d333fa1dc8fca29cf089509b3256e7174cd2cae
 %CheckAround
 %%(0,0)
 checkAround(0, 0, Field) :- 
