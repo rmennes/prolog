@@ -1,21 +1,58 @@
-%Utils
+%%%%%%%%%%%
+% UTILITY %
+%%%%%%%%%%%
+
 getNthElement(0, [Head|_], Head).
 getNthElement(N, [_|Tail], X) :- N1 is N-1, getNthElement(N1, Tail, X).
 
 getXYElement(X, 0, [Head|_], E) :- getNthElement(X, Head, E).
 getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 
+<<<<<<< HEAD
 %Default rules
 %%Row and Coumns
 width([Head|_], X) :- length(Head, X1), X is X1-1. %width
 height(Field, X) :- length(Field, X1), X is X1-1. %height
+=======
+% Width & height of 2-dimensional field
+width([Head|_], X) :- length(Head, X). %width
+height(Field, X) :- length(Field, X). %height
+>>>>>>> 8d333fa1dc8fca29cf089509b3256e7174cd2cae
+
+allZero([]).
+allZero([0|T]) :- allZero(T).
+
+%%%%%%%%%
+% RULES %
+%%%%%%%%%
 
 %Check whether field satisfies the numbers on the side
+<<<<<<< HEAD
 checkFieldStrip([], 0).
 checkFieldStrip([StripHead|StripTail], BoatCount) :- 
     boat(StripHead), NextCount is BoatCount - 1, checkFieldStrip(StripTail, NextCount);
     water(StripHead), checkFieldStrip(StripTail, BoatCount).
    
+=======
+checkRowCount([], 0).
+checkRowCount([StripHead|StripTail], BoatCount) :- 
+    boat(StripHead), NextCount is BoatCount - 1, checkRowCount(StripTail, NextCount);
+    water(StripHead), checkRowCount(StripTail, BoatCount).
+    
+checkAllRowCounts([], []).
+checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
+    checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
+    
+checkColumnCount([], []).
+checkColumnCount([RowHead|RowTail], [FirstCount|OtherCounts]) :-
+    boat(RowHead), NextCount is FirstCount - 1, checkColumnCount(RowTail, OtherCounts).
+
+checkAllColumnCounts([], Counts) :- allZero(Counts).
+checkAllColumnCounts([FirstRow|OtherRows], Counts) :-
+    checkColumnCount(FirstRow, Counts), checkColumnCount(OtherRows, Counts).
+    
+
+>>>>>>> 8d333fa1dc8fca29cf089509b3256e7174cd2cae
 %CheckAround
 %%(0,0)
 checkAround(0, 0, Field) :- 
@@ -93,4 +130,5 @@ checkAround(X, Y, Field) :- width(Field, Y),height(Field, X), XS is X-1, YS is Y
 	getXYElement(XS, YS, Field, LeftUp),
 	getXYElement(XS, Y, Field, Left),
 	getXYElement(X, YS, Field, Up),
+	buttomRightCorner(E), buttomBorder(Left), rightBorder(Up),
 	north(E, Up), west(E, Left), diagonal(E, LeftUp).

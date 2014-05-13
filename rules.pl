@@ -1,4 +1,7 @@
-%Utils
+%%%%%%%%%%%
+% UTILITY %
+%%%%%%%%%%%
+
 getNthElement(0, [Head|_], Head).
 getNthElement(N, [_|Tail], X) :- N1 is N-1, getNthElement(N1, Tail, X).
 
@@ -10,12 +13,32 @@ getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 width([Head|_], X) :- length(Head, X1), X is X1-1. %width
 height(Field, X) :- length(Field, X1), X is X1-1. %height
 
+allZero([]).
+allZero([0|T]) :- allZero(T).
+
+%%%%%%%%%
+% RULES %
+%%%%%%%%%
+
 %Check whether field satisfies the numbers on the side
-checkFieldStrip([], 0).
-checkFieldStrip([StripHead|StripTail], BoatCount) :- 
-    boat(StripHead), NextCount is BoatCount - 1, checkFieldStrip(StripTail, NextCount);
-    water(StripHead), checkFieldStrip(StripTail, BoatCount).
-   
+checkRowCount([], 0).
+checkRowCount([StripHead|StripTail], BoatCount) :- 
+    boat(StripHead), NextCount is BoatCount - 1, checkRowCount(StripTail, NextCount);
+    water(StripHead), checkRowCount(StripTail, BoatCount).
+    
+checkAllRowCounts([], []).
+checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
+    checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
+    
+checkColumnCount([], []).
+checkColumnCount([RowHead|RowTail], [FirstCount|OtherCounts]) :-
+    boat(RowHead), NextCount is FirstCount - 1, checkColumnCount(RowTail, OtherCounts).
+
+checkAllColumnCounts([], Counts) :- allZero(Counts).
+checkAllColumnCounts([FirstRow|OtherRows], Counts) :-
+    checkColumnCount(FirstRow, Counts), checkColumnCount(OtherRows, Counts).
+    
+
 %CheckAround
 %%(0,0)
 checkAround(0, 0, Field) :- 
