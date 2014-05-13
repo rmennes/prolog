@@ -4,6 +4,7 @@ boat(e).
 boat(s).
 boat(w).
 boat(x).
+boat(o).
 water('~').
 
 %%north
