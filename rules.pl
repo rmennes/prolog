@@ -48,13 +48,13 @@ checkAround(0, 0, Field) :-
 	getXYElement(1, 1, Field, RightDown), 
 	leftTopCorner(E),
 	leftBorder(Down),
-	topBorder(Right).
+	topBorder(Right),
 	south(E, Down), 
 	east(E, Right), 
 	diagonal(E, RightDown).
 
 %%(0, Y) met 0 < Y < width
-checkAround(0, Y, Field) :- width(Field, Rows), Y > 0, Y < Rows, YS is Y-1, YA is Y+1, 
+checkAround(0, Y, Field) :- height(Field, Rows), Y > 0, Y < Rows, YS is Y-1, YA is Y+1, 
 	getXYElement(0, Y, Field, E), 
 	getXYElement(0, YS, Field, Up), 
 	getXYElement(0, YA, Field, Down), 
@@ -63,6 +63,9 @@ checkAround(0, Y, Field) :- width(Field, Rows), Y > 0, Y < Rows, YS is Y-1, YA i
 	getXYElement(1, YA, Field, RightDown), 
 	leftBorder(E), leftBorder(Up), leftBorder(Down),
 	north(E, Up),south(E, Down),east(E, Right), diagonal(E, RightUp), diagonal(E, RightDown).
+
+%%(0, Y) met Y == width
+
 
 %%(X, 0) met 0 < X < height
 checkAround(X, 0, Field) :- height(Field, Height), X > 0, X < Height, XS is X-1, XA is X+1, 
@@ -110,11 +113,14 @@ checkAround(X, Y, Field) :- width(Field, Y), height(Field, Height), X > 0, X < H
 	buttomBorder(E), buttomBorder(Left), buttom(Right),
 	north(E, Up), west(E, Left), east(E, Right), diagonal(E, LeftUp), diagonal(E, RightUp).
 
-%%(X, Y) met X - heigth && Y = width
-checkAround(X, Y, Field) :- width(Field, Y),height(Field, X), XS is X-1, YS is Y-1,
+%%(X, Y) met X = heigth && Y = width
+checkAround(X, Y, Field) :- height(Field, Y),width(Field, X), XS is X-1, YS is Y-1,
 	getXYElement(X, Y, Field, E),
 	getXYElement(XS, YS, Field, LeftUp),
 	getXYElement(XS, Y, Field, Left),
 	getXYElement(X, YS, Field, Up),
-	buttomRightCorner(E), buttomBorder(Left), rightBorder(Up),
+	rightButtomCorner(E), buttomBorder(Left), rightBorder(Up),
 	north(E, Up), west(E, Left), diagonal(E, LeftUp).
+
+%% 0 <= Y <= height
+%% 0 <= X <= width

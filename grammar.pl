@@ -96,15 +96,15 @@ rightTopCorner(o).
 rightTopCorner('~').
 
 %%LeftButtomCorner
-leftButtonCorner(s).
-leftButtonCorner(e).
-leftButtonCorner(o).
-leftButtonCorner('~').
+leftButtomCorner(s).
+leftButtomCorner(e).
+leftButtomCorner(o).
+leftButtomCorner('~').
 
 %%RightButtonCorner
-rightButtonCorner(s).
-rightButtonCorner(w).
-rightButtonCorner(o).
-rightButtonCorner('~').
+rightButtomCorner(s).
+rightButtomCorner(w).
+rightButtomCorner(o).
+rightButtomCorner('~').
 
 
