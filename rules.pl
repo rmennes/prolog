@@ -16,11 +16,13 @@ height(Field, X) :- length(Field, X1), X is X1-1. %height
 actualWidth([Head|_], X) :- length(Head, X).
 actualHeight(Field, X) :- length(Field, X).
 
-allZero([]).
-allZero([0|T]) :- allZero(T).
-
 makeRowOfLength(0, _, []).
 makeRowOfLength(N, P, [P|Tail]) :- N1 is N-1, makeRowOfLength(N1, P, Tail).
+
+printRow([]) :- print('\n').
+printRow([RowHead|RowTail]) :- print(RowHead), print(' '), printRow(RowTail).
+printField([]).
+printField([FirstRow|OtherRows]) :- printRow(FirstRow), printField(OtherRows).
 
 omringRow(Row, P, [P|NewRow]) :- append(Row, [P], NewRow).
 
