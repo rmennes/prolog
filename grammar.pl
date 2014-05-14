@@ -7,6 +7,14 @@ boat(x).
 boat(o).
 water('~').
 
+%Boat grammar
+northPiece(n).
+eastPiece(e).
+southPiece(s).
+westPiece(w).
+middlePiece(x).
+lonePiece(o).
+
 %%north
 north(n, '~').
 north(o, '~').
