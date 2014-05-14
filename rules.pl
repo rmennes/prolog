@@ -48,7 +48,7 @@ checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
     
 loopY(_, 0, _, 0).  % Loop until x=0 && count=0
-loopY(Field, Count, X, Y) :-
+loopY(Field, Count, X, Y) :- Count > 0, Y > 0,
     XDec is X - 1, YDec is Y - 1, CountDec is Count - 1, getXYElement(XDec, YDec, Field, Cell), boat(Cell), loopY(Field, CountDec, X, YDec);
     XDec is X - 1, YDec is Y - 1, getXYElement(XDec, YDec, Field, Cell), water(Cell), loopY(Field, Count, X, YDec).
    
@@ -60,7 +60,7 @@ loopX(Field, [FirstCount|OtherCounts], X) :-
 checkAllColumnCounts(Field, ColumnCounts) :-
     loopX(Field, ColumnCounts, 1).
     
-checkAllCounts(Field, RowCounts, ColumnCounts) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
+checkAllCounts(Field, RowCounts, ColumnCounts, Field) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
 
 %CheckPosition
 %%(0,0)
@@ -181,6 +181,13 @@ checkAround(X, Y, Field) :- height(Field, Y),width(Field, X), XS is X-1, YS is Y
 
 %% 0 <= Y <= height
 %% 0 <= X <= width
+
+makeRow([TopHead,'~'],[RowHead,'~'],[DownHead,'~'],[]) :-
+	north(RowHead,TopHead), south(RowHead,DownHead).
+makeRow([TopPrevious,TopHead,TopNext|TopTail], [RowPrevious,RowHead,RowNext|RowTail], [DownPrevious,DownHead,DownNext|DownTail], [RowHead|ResultTail]) :-
+	north(RowHead, TopHead), east(RowHead, RowNext), west(RowHead,RowPrevious),south(RowHead,DownHead),
+	diagonal(RowHead,TopPrevious), diagonal(RowHead,TopNext), diagonal(RowHead,DownNext), diagonal(RowHead, DownPrevious), 
+	makeRow([TopHead,TopNext|TopTail],[RowHead,RowNext|RowTail],[DownHead,DownNext|DownTail], ResultTail).
 
 checkField(0, Y, Field) :- height(Field, YMax),  Y > YMax.
 checkField(X, Y, Field) :- width(Field, X), checkAround(X, Y, Field), YNext is Y+1, checkField(0, YNext, Field).

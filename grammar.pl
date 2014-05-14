@@ -17,7 +17,12 @@ north(w, '~').
 north(x, x).
 north(x, '~').
 north(x, n).
-north('~', P) :- P\=n.
+north('~', '~').
+north('~', s).
+north('~', e).
+north('~', w).
+north('~', o).
+north('~', x).
 
 %%East
 east(n, '~').
@@ -29,7 +34,12 @@ east(w, e).
 east(x, x).
 east(x, '~').
 east(x, e).
-east('~', P) :- P\=e.
+east('~', '~').
+east('~', s).
+east('~', n).
+east('~', w).
+east('~', o).
+east('~', x).
 
 %%South
 south(n, x).
@@ -41,7 +51,13 @@ south(w, '~').
 south(x, x).
 south(x, '~').
 south(x, s).
-south('~', P) :- P\=s.
+south('~', '~').
+south('~', e).
+south('~', n).
+south('~', w).
+south('~', o).
+south('~', x).
+
 
 %%West
 west(n, '~').
@@ -53,7 +69,12 @@ west(w, '~').
 west(x, x).
 west(x, '~').
 west(x, w).
-west('~', P) :- P\=w.
+west('~', '~').
+west('~', e).
+west('~', n).
+west('~', s).
+west('~', o).
+west('~', x).
 
 %%diagonal
 diagonal(_, '~').
