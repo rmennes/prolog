@@ -19,6 +19,12 @@ actualHeight(Field, X) :- length(Field, X).
 allZero([]).
 allZero([0|T]) :- allZero(T).
 
+printRow([]) :- print('\n').
+printRow([RowHead|RowTail]) :- print(RowHead), print(' '), printRow(RowTail).
+printField([]).
+printField([FirstRow|OtherRows]) :- printRow(FirstRow), printField(OtherRows).
+
+
 %%Removing Duplicates
 	memberOf(X,[X|_]).
 	memberOf(X,[_|T]) :- memberOf(X,T).
