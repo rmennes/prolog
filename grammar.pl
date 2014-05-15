@@ -15,6 +15,13 @@ westPiece(w).
 middlePiece(x).
 lonePiece(o).
 
+notMiddlePiece(n).
+notMiddlePiece(e).
+notMiddlePiece(s).
+notMiddlePiece(w).
+notMiddlePiece(o).
+notMiddlePiece('~').
+
 %%north
 north(n, '~').
 north(o, '~').

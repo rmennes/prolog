@@ -12,7 +12,7 @@ test boat lengths
 
 checkAmountOfBoats([[w, x, e], ['~', '~', n], [o, '~', s]]
 
-battleship([
+battleShip([
 [n,_,'~',_,_,_,_,n],
 [_,_,n,'~',_,o,_,_],
 ['~','~',_,'~',_,_,_,s],

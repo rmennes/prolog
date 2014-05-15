@@ -104,16 +104,36 @@ checkAmountOfBoats(Field, Allowed) :- loopBoatRowCheck(Field, Allowed), loopBoat
 %%%%%%%%%%%%%%%%%%%%%
 checkRow([TopHead,'~'],[RowHead,'~'],[DownHead,'~']) :- north(RowHead,TopHead), south(RowHead,DownHead).
 checkRow([TopPrevious,TopHead,TopNext|TopTail], [RowPrevious,RowHead,RowNext|RowTail], [DownPrevious,DownHead,DownNext|DownTail]) :-
+    boat(RowHead),
 	north(RowHead, TopHead), east(RowHead, RowNext), west(RowHead,RowPrevious),south(RowHead,DownHead),
 	diagonal(RowHead,TopPrevious), diagonal(RowHead,TopNext), diagonal(RowHead,DownNext), diagonal(RowHead, DownPrevious), 
 	checkRow([TopHead,TopNext|TopTail],[RowHead,RowNext|RowTail],[DownHead,DownNext|DownTail]).
+checkRow([_,TopHead,TopNext|TopTail], [_,RowHead,RowNext|RowTail], [_,DownHead,DownNext|DownTail]) :-
+    water(RowHead),
+    checkRow([TopHead,TopNext|TopTail],[RowHead,RowNext|RowTail],[DownHead,DownNext|DownTail]).
 
 checkColumn([TopHead,RowHead,LastHead]) :- 
 	length(RowHead, Length), makeRowOfLength(Length, ~, LastHead), checkRow(TopHead, RowHead, LastHead). %MSS IS DEZE FOUT!
 checkColumn([TopHead, RowHead, DownHead|Tail]) :-
-	checkRow(TopHead, RowHead, DownHead), checkColumn([RowHead, DownHead|Tail]).	
+	checkRow(TopHead, RowHead, DownHead), checkColumn([RowHead, DownHead|Tail]).
 
-checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring).
+checkXRow([_,'~'],[RowHead,'~'],[_,'~']) :- notMiddlePiece(RowHead).
+checkXRow([TopHead,'~'],[x,'~'],[DownHead,'~']) :- boat(TopHead), boat(DownHead).
+checkXRow([_,TopHead,TopNext|TopTail], [_,RowHead,RowNext|RowTail], [_,DownHead,DownNext|DownTail]) :-
+    notMiddlePiece(RowHead), checkXRow([TopHead,TopNext|TopTail],[RowHead,RowNext|RowTail],[DownHead,DownNext|DownTail]).
+checkXRow([_,TopHead,TopNext|TopTail], [RowPrevious,x,RowNext|RowTail], [_,DownHead,DownNext|DownTail]) :-
+    water(TopHead), water(DownHead), boat(RowPrevious), boat(RowNext), 
+    checkXRow([TopHead,TopNext|TopTail],[x,RowNext|RowTail],[DownHead,DownNext|DownTail]).
+checkXRow([_,TopHead,TopNext|TopTail], [RowPrevious,x,RowNext|RowTail], [_,DownHead,DownNext|DownTail]) :-
+    boat(TopHead), boat(DownHead), water(RowPrevious), water(RowNext),
+    checkXRow([TopHead,TopNext|TopTail],[x,RowNext|RowTail],[DownHead,DownNext|DownTail]).
+	
+checkXColumn([TopHead,RowHead,LastHead]) :- 
+    length(RowHead, Length), makeRowOfLength(Length, '~', LastHead), checkXRow(TopHead, RowHead, LastHead).
+checkXColumn([TopHead, RowHead, DownHead|Tail]) :- 
+    checkXRow(TopHead, RowHead, DownHead), checkXColumn([RowHead, DownHead|Tail]).
 
-battleShip(Field, XShips, YShips, Ships, Result) :- checkAllCounts(Field, YShips, XShips, Result), checkAmountOfBoats(Result, Ships), checkField(Result, Result), printField(Result).
+checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring), checkXColumn(Omring), printField(Omring).
+
+battleShip(Field, XShips, YShips, Ships, Result) :- checkField(Field, Result), checkAllCounts(Result, YShips, XShips, Result), checkAmountOfBoats(Result, Ships), printField(Result).
 
