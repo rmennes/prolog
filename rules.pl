@@ -49,21 +49,23 @@ checkRowCount([StripHead|StripTail], BoatCount) :-
 checkAllRowCounts([], []).
 checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
-    
-loopCheckY(_, 0, _, 0).  % Loop until x=0 && count=0
-loopCheckY(Field, Count, X, Y) :- Count > 0, Y > 0,
-    XDec is X - 1, YDec is Y - 1, CountDec is Count - 1, getXYElement(XDec, YDec, Field, Cell), boat(Cell), loopCheckY(Field, CountDec, X, YDec);
-    XDec is X - 1, YDec is Y - 1, getXYElement(XDec, YDec, Field, Cell), water(Cell), loopCheckY(Field, Count, X, YDec).
    
+
+loopCheckY(_, 0, _, Y, Y). % Y < height
+loopCheckY(Field, Count, X, Y, Height) :- Count > 0,
+    getXYElement(X, Y, Field, Cell), boat(Cell), YInc is Y + 1, CountDec is Count - 1, loopCheckY(Field, CountDec, X, YInc, Height).
+loopCheckY(Field, Count, X, Y, Height) :-
+    getXYElement(X, Y, Field, Cell), water(Cell), YInc is Y + 1, loopCheckY(Field, Count, X, YInc, Height).
   
-loopCheckX(Field, _, XInc) :- X is XInc - 1, actualWidth(Field, X).
-loopCheckX(Field, [FirstCount|OtherCounts], X) :-
-    actualHeight(Field, Height), loopCheckY(Field, FirstCount, X, Height), XInc is X + 1, loopCheckX(Field, OtherCounts, XInc).
+loopCheckX(_, _, X, X, _). % X < width
+loopCheckX(Field, [FirstCount|OtherCounts], X, Width, Height) :-
+    loopCheckY(Field, FirstCount, X, 0, Height), XInc is X + 1, loopCheckX(Field, OtherCounts, XInc, Width, Height).
     
-checkAllColumnCounts(Field, ColumnCounts) :-
-    loopCheckX(Field, ColumnCounts, 1).
+checkAllColumnCounts(Field, ColumnCounts, Width, Height) :-
+    loopCheckX(Field, ColumnCounts, 0, Width, Height).
     
-checkAllCounts(Field, RowCounts, ColumnCounts, Field) :- checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts).
+checkAllCounts(Field, RowCounts, ColumnCounts, Field) :- 
+    actualWidth(Field, Width), actualHeight(Field, Height), checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts, Width, Height).
 
 % Verify amount of boats
 busyOnHorizontalBoat([e|BoatTail], Count, Allowed) :- CountInc is Count + 1, member(CountInc, Allowed), checkBoatRow(BoatTail, Allowed).
