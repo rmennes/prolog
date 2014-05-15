@@ -102,7 +102,7 @@ checkAmountOfBoats(Field, Allowed) :- loopBoatRowCheck(Field, Allowed), loopBoat
 %%%%%%%%%%%%%%%%%%%%%
 % Check valid field %
 %%%%%%%%%%%%%%%%%%%%%
-checkRow([TopHead,'~'],[RowHead,'~'],[DownHead,'~']) :- north(RowHead,TopHead), south(RowHead,DownHead).
+checkRow([TopHead,'~'],[RowHead,'~'],[DownHead,'~']) :- north(RowHead,TopHead), south(RowHead,DownHead), !.
 checkRow([TopPrevious,TopHead,TopNext|TopTail], [RowPrevious,RowHead,RowNext|RowTail], [DownPrevious,DownHead,DownNext|DownTail]) :-
     boat(RowHead),
 	north(RowHead, TopHead), east(RowHead, RowNext), west(RowHead,RowPrevious),south(RowHead,DownHead),
@@ -117,7 +117,7 @@ checkColumn([TopHead,RowHead,LastHead]) :-
 checkColumn([TopHead, RowHead, DownHead|Tail]) :-
 	checkRow(TopHead, RowHead, DownHead), checkColumn([RowHead, DownHead|Tail]).
 
-checkXRow([_,'~'],[RowHead,'~'],[_,'~']) :- notMiddlePiece(RowHead).
+checkXRow([_,'~'],[RowHead,'~'],[_,'~']) :- notMiddlePiece(RowHead), !.
 checkXRow([TopHead,'~'],[x,'~'],[DownHead,'~']) :- boat(TopHead), boat(DownHead).
 checkXRow([_,TopHead,TopNext|TopTail], [_,RowHead,RowNext|RowTail], [_,DownHead,DownNext|DownTail]) :-
     notMiddlePiece(RowHead), checkXRow([TopHead,TopNext|TopTail],[RowHead,RowNext|RowTail],[DownHead,DownNext|DownTail]).
@@ -133,7 +133,7 @@ checkXColumn([TopHead,RowHead,LastHead]) :-
 checkXColumn([TopHead, RowHead, DownHead|Tail]) :- 
     checkXRow(TopHead, RowHead, DownHead), checkXColumn([RowHead, DownHead|Tail]).
 
-checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring), checkXColumn(Omring), printField(Omring).
+checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring), checkXColumn(Omring).
 
-battleShip(Field, XShips, YShips, Ships, Result) :- checkField(Field, Result), checkAllCounts(Result, YShips, XShips, Result), checkAmountOfBoats(Result, Ships), printField(Result).
+battleShip(Field, XShips, YShips, Ships, Result) :- write(start), nl, checkField(Field, Result), write(checked), nl, checkAllCounts(Result, YShips, XShips, Result), write('checked counts'), nl, checkAmountOfBoats(Result, Ships), printField(Result).
 
