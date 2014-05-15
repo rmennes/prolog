@@ -111,6 +111,7 @@ checkColumn([TopHead,RowHead,LastHead]) :-
 checkColumn([TopHead, RowHead, DownHead|Tail]) :-
 	checkRow(TopHead, RowHead, DownHead), checkColumn([RowHead, DownHead|Tail]).	
 
-checkField(Field) :- omringTable(Field, '~', Omring), checkColumn(Omring),!.
+checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring).
 
+battleShip(Field, XShips, YShips, Ships, Result) :- checkAllCounts(Field, YShips, XShips, Result), checkAmountOfBoats(Result, Ships), checkField(Result, Result), printField(Result).
 
