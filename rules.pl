@@ -8,30 +8,27 @@ getNthElement(N, [_|Tail], X) :- N1 is N-1, getNthElement(N1, Tail, X).
 getXYElement(X, 0, [Head|_], E) :- getNthElement(X, Head, E), !.
 getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 
-getColumnAsArrayHelp(Field, _, Y, []) :- actualHeight(Field, Y), !.
+getColumnAsArrayHelp(Field, _, Y, []) :- height(Field, Y), !.
 getColumnAsArrayHelp(Field, X, Y, [E|Tail]) :- YInc is Y + 1, getXYElement(X, Y, Field, E), getColumnAsArrayHelp(Field, X, YInc, Tail).
-getColumnAsArray(Field, X, Array) :- getColumnAsArrayHelp(Field, X, 0, Array), !.
+getColumnAsArray(Field, X, Array) :- !, getColumnAsArrayHelp(Field, X, 0, Array), !.
 
 %Default rules
 %%Row and Coumns
-width([Head|_], X) :- length(Head, X1), X is X1-1, !. %width
-height(Field, X) :- length(Field, X1), X is X1-1, !. %height
-
-actualWidth([Head|_], X) :- length(Head, X), !.
-actualHeight(Field, X) :- length(Field, X), !.
+width([Head|_], X) :- !, length(Head, X).
+height(Field, X) :- !, length(Field, X).
 
 makeRowOfLength(0, _, []) :- !.
 makeRowOfLength(N, P, [P|Tail]) :- N1 is N-1, makeRowOfLength(N1, P, Tail).
 
 printRow([]) :- print('\n'), !.
-printRow([RowHead|RowTail]) :- print(RowHead), print(' '), printRow(RowTail).
+printRow([RowHead|RowTail]) :- !, print(RowHead), print(' '), printRow(RowTail).
 printField([]) :- !.
-printField([FirstRow|OtherRows]) :- printRow(FirstRow), printField(OtherRows).
+printField([FirstRow|OtherRows]) :- !, printRow(FirstRow), printField(OtherRows).
 
 omringRow(Row, P, [P|NewRow]) :- append(Row, [P], NewRow), !.
 
 omringEveryRow([],_, []) :- !.
-omringEveryRow([Row|Tail],P, [Result|ResultTail]) :- omringRow(Row, P, Result), omringEveryRow(Tail, P, ResultTail).
+omringEveryRow([Row|Tail],P, [Result|ResultTail]) :- !, omringRow(Row, P, Result), omringEveryRow(Tail, P, ResultTail).
 omringTable(Table, P, [R2|ResultTail]) :- 
 	!, omringEveryRow(Table, P, [R1Head|R1Tail]), length(R1Head, L), makeRowOfLength(L, P, R2), append([R1Head|R1Tail], [R2], ResultTail),!.
 
@@ -65,7 +62,7 @@ checkAllColumnCounts(Field, ColumnCounts, Width, Height) :-
     loopCheckX(Field, ColumnCounts, 0, Width, Height).
     
 checkAllCounts(Field, RowCounts, ColumnCounts) :- 
-    actualWidth(Field, Width), actualHeight(Field, Height), checkAllRowCounts(Field, RowCounts), checkAllColumnCounts(Field, ColumnCounts, Width, Height).
+    !, width(Field, Width), height(Field, Height), checkAllRowCounts(Field, RowCounts), !, checkAllColumnCounts(Field, ColumnCounts, Width, Height), !.
 
 % Verify amount of boats
 busyOnHorizontalBoat([e|BoatTail], Count, Allowed) :- CountInc is Count + 1, member(CountInc, Allowed), checkBoatRow(BoatTail, Allowed).
@@ -93,11 +90,11 @@ checkBoatColumn(['~'|ColumnTail], Allowed) :- checkBoatColumn(ColumnTail, Allowe
 loopBoatRowCheck([], _) :- !.
 loopBoatRowCheck([FirstRow|OtherRows], Allowed) :- checkBoatRow(FirstRow, Allowed), loopBoatRowCheck(OtherRows, Allowed).
 
-loopBoatColumnCheck(Field, X, _) :- actualWidth(Field, X), !.
+loopBoatColumnCheck(Field, X, _) :- width(Field, X), !.
 loopBoatColumnCheck(Field, X, Allowed) :- 
     getColumnAsArray(Field, X, Column), checkBoatColumn(Column, Allowed), XInc is X + 1, loopBoatColumnCheck(Field, XInc, Allowed).
     
-checkAmountOfBoats(Field, Allowed) :- loopBoatRowCheck(Field, Allowed), loopBoatColumnCheck(Field, 0, Allowed).
+checkAmountOfBoats(Field, Allowed) :- loopBoatRowCheck(Field, Allowed), !, loopBoatColumnCheck(Field, 0, Allowed), !.
     
 %%%%%%%%%%%%%%%%%%%%%
 % Check valid field %
@@ -133,7 +130,7 @@ checkXColumn([TopHead,RowHead,LastHead]) :-
 checkXColumn([TopHead, RowHead, DownHead|Tail]) :- 
     checkXRow(TopHead, RowHead, DownHead), checkXColumn([RowHead, DownHead|Tail]).
 
-checkField(Field, Field) :- omringTable(Field, '~', Omring), checkColumn(Omring), checkXColumn(Omring).
+checkField(Field, Field) :- !, omringTable(Field, '~', Omring), !, checkColumn(Omring), checkXColumn(Omring).
 
 battleShip(Field, XShips, YShips, Ships, Result) :- write(start), nl, checkField(Field, Result), checkAllCounts(Result, YShips, XShips), checkAmountOfBoats(Result, Ships), printField(Result), !.
 
