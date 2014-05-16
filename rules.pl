@@ -2,38 +2,38 @@
 % UTILITY %
 %%%%%%%%%%%
 
-getNthElement(0, [Head|_], Head).
+getNthElement(0, [Head|_], Head) :- !.
 getNthElement(N, [_|Tail], X) :- N1 is N-1, getNthElement(N1, Tail, X).
 
-getXYElement(X, 0, [Head|_], E) :- getNthElement(X, Head, E).
+getXYElement(X, 0, [Head|_], E) :- getNthElement(X, Head, E), !.
 getXYElement(X, Y, [_|Tail], E) :- Y1 is Y-1, getXYElement(X, Y1, Tail, E).
 
-getColumnAsArrayHelp(Field, _, Y, []) :- actualHeight(Field, Y).
+getColumnAsArrayHelp(Field, _, Y, []) :- actualHeight(Field, Y), !.
 getColumnAsArrayHelp(Field, X, Y, [E|Tail]) :- YInc is Y + 1, getXYElement(X, Y, Field, E), getColumnAsArrayHelp(Field, X, YInc, Tail).
-getColumnAsArray(Field, X, Array) :- getColumnAsArrayHelp(Field, X, 0, Array).
+getColumnAsArray(Field, X, Array) :- getColumnAsArrayHelp(Field, X, 0, Array), !.
 
 %Default rules
 %%Row and Coumns
-width([Head|_], X) :- length(Head, X1), X is X1-1. %width
-height(Field, X) :- length(Field, X1), X is X1-1. %height
+width([Head|_], X) :- length(Head, X1), X is X1-1, !. %width
+height(Field, X) :- length(Field, X1), X is X1-1, !. %height
 
-actualWidth([Head|_], X) :- length(Head, X).
-actualHeight(Field, X) :- length(Field, X).
+actualWidth([Head|_], X) :- length(Head, X), !.
+actualHeight(Field, X) :- length(Field, X), !.
 
-makeRowOfLength(0, _, []).
+makeRowOfLength(0, _, []) :- !.
 makeRowOfLength(N, P, [P|Tail]) :- N1 is N-1, makeRowOfLength(N1, P, Tail).
 
-printRow([]) :- print('\n').
+printRow([]) :- print('\n'), !.
 printRow([RowHead|RowTail]) :- print(RowHead), print(' '), printRow(RowTail).
-printField([]).
+printField([]) :- !.
 printField([FirstRow|OtherRows]) :- printRow(FirstRow), printField(OtherRows).
 
-omringRow(Row, P, [P|NewRow]) :- append(Row, [P], NewRow).
+omringRow(Row, P, [P|NewRow]) :- append(Row, [P], NewRow), !.
 
-omringEveryRow([],_, []).
+omringEveryRow([],_, []) :- !.
 omringEveryRow([Row|Tail],P, [Result|ResultTail]) :- omringRow(Row, P, Result), omringEveryRow(Tail, P, ResultTail).
 omringTable(Table, P, [R2|ResultTail]) :- 
-	omringEveryRow(Table, P, [R1Head|R1Tail]), length(R1Head, L), makeRowOfLength(L, P, R2), append([R1Head|R1Tail], [R2], ResultTail),!.
+	!, omringEveryRow(Table, P, [R1Head|R1Tail]), length(R1Head, L), makeRowOfLength(L, P, R2), append([R1Head|R1Tail], [R2], ResultTail),!.
 
 %%%%%%%%%
 % RULES %
@@ -41,23 +41,23 @@ omringTable(Table, P, [R2|ResultTail]) :-
 
 % Verify side counts
 
-checkRowCount([], 0).
+checkRowCount([], 0) :- !.
 checkRowCount([StripHead|StripTail], BoatCount) :- 
     boat(StripHead), NextCount is BoatCount - 1, checkRowCount(StripTail, NextCount);
     water(StripHead), checkRowCount(StripTail, BoatCount).
     
-checkAllRowCounts([], []).
+checkAllRowCounts([], []) :- !.
 checkAllRowCounts([FirstRow|OtherRows], [FirstCount|OtherCounts]) :-
     checkRowCount(FirstRow, FirstCount), checkAllRowCounts(OtherRows, OtherCounts).
    
 
-loopCheckY(_, 0, _, Y, Y). % Y < height
+loopCheckY(_, 0, _, Y, Y) :- !. % Y < height
 loopCheckY(Field, Count, X, Y, Height) :- Count > 0,
     getXYElement(X, Y, Field, Cell), boat(Cell), YInc is Y + 1, CountDec is Count - 1, loopCheckY(Field, CountDec, X, YInc, Height).
 loopCheckY(Field, Count, X, Y, Height) :-
     getXYElement(X, Y, Field, Cell), water(Cell), YInc is Y + 1, loopCheckY(Field, Count, X, YInc, Height).
   
-loopCheckX(_, _, X, X, _). % X < width
+loopCheckX(_, _, X, X, _) :- !. % X < width
 loopCheckX(Field, [FirstCount|OtherCounts], X, Width, Height) :-
     loopCheckY(Field, FirstCount, X, 0, Height), XInc is X + 1, loopCheckX(Field, OtherCounts, XInc, Width, Height).
     
@@ -71,7 +71,7 @@ checkAllCounts(Field, RowCounts, ColumnCounts) :-
 busyOnHorizontalBoat([e|BoatTail], Count, Allowed) :- CountInc is Count + 1, member(CountInc, Allowed), checkBoatRow(BoatTail, Allowed).
 busyOnHorizontalBoat([x|BoatTail], Count, Allowed) :- CountInc is Count + 1, busyOnHorizontalBoat(BoatTail, CountInc, Allowed).
    
-checkBoatRow([], _).
+checkBoatRow([], _) :- !.
 checkBoatRow([o|RowTail], Allowed) :- member(1, Allowed), checkBoatRow(RowTail, Allowed).
 checkBoatRow([w|RowTail], Allowed) :- busyOnHorizontalBoat(RowTail, 1, Allowed).
 checkBoatRow([n|RowTail], Allowed) :- checkBoatRow(RowTail, Allowed).
@@ -82,7 +82,7 @@ checkBoatRow(['~'|RowTail], Allowed) :- checkBoatRow(RowTail, Allowed).
 busyOnVerticalBoat([s|BoatTail], Count, Allowed) :- CountInc is Count + 1, member(CountInc, Allowed), checkBoatColumn(BoatTail, Allowed).
 busyOnVerticalBoat([x|BoatTail], Count, Allowed) :- CountInc is Count + 1, busyOnVerticalBoat(BoatTail, CountInc, Allowed).
    
-checkBoatColumn([], _).
+checkBoatColumn([], _) :- !.
 checkBoatColumn([o|ColumnTail], Allowed) :- member(1, Allowed), checkBoatColumn(ColumnTail, Allowed).
 checkBoatColumn([n|ColumnTail], Allowed) :- busyOnVerticalBoat(ColumnTail, 1, Allowed).
 checkBoatColumn([w|ColumnTail], Allowed) :- checkBoatColumn(ColumnTail, Allowed).
@@ -90,10 +90,10 @@ checkBoatColumn([e|ColumnTail], Allowed) :- checkBoatColumn(ColumnTail, Allowed)
 checkBoatColumn([x|ColumnTail], Allowed) :- checkBoatColumn(ColumnTail, Allowed).
 checkBoatColumn(['~'|ColumnTail], Allowed) :- checkBoatColumn(ColumnTail, Allowed).
 
-loopBoatRowCheck([], _).
+loopBoatRowCheck([], _) :- !.
 loopBoatRowCheck([FirstRow|OtherRows], Allowed) :- checkBoatRow(FirstRow, Allowed), loopBoatRowCheck(OtherRows, Allowed).
 
-loopBoatColumnCheck(Field, X, _) :- actualWidth(Field, X).
+loopBoatColumnCheck(Field, X, _) :- actualWidth(Field, X), !.
 loopBoatColumnCheck(Field, X, Allowed) :- 
     getColumnAsArray(Field, X, Column), checkBoatColumn(Column, Allowed), XInc is X + 1, loopBoatColumnCheck(Field, XInc, Allowed).
     
